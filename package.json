@@ -1,0 +1,15 @@
+{
+  "name": "sap-copilot-forge",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SAPCopilotForge — SAPUI5 Fiori + Node.js + LangGraph AI Agent",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "agent:install": "pip install -r agent/requirements.txt",
+    "agent:start": "cd agent && uvicorn server:app --reload --port 8000"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}

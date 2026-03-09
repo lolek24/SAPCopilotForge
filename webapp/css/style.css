@@ -1,0 +1,14 @@
+/* Chat input toolbar — auto height for TextArea */
+.chatInputToolbar {
+    height: auto !important;
+    padding: 0 !important;
+}
+
+.chatInputToolbar .sapMTBContent {
+    padding: 0 !important;
+}
+
+/* Chat panel left border separator */
+#__xmlview0--chatPanel {
+    border-left: 1px solid #d9d9d9;
+}

@@ -1,0 +1,143 @@
+<mvc:View
+    controllerName="com.sap.app.controller.Dashboard"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:f="sap.f"
+    >
+
+    <Page id="dashboardPage" showHeader="false" enableScrolling="true">
+        <content>
+            <!-- Page Header -->
+            <f:DynamicPageHeader pinnable="false">
+                <HBox class="sapUiSmallMargin">
+                    <Title text="{i18n>dashboardTitle}" level="H3" class="sapUiSmallMarginEnd" />
+                    <ObjectStatus text="{i18n>dashboardSystemOnline}" state="Success" icon="sap-icon://connected" />
+                </HBox>
+            </f:DynamicPageHeader>
+
+            <!-- KPI Tiles -->
+            <Panel headerText="{i18n>dashboardKpiHeader}" class="sapUiSmallMargin">
+                <HBox wrap="Wrap" class="sapUiSmallMargin">
+                    <GenericTile
+                        header="{i18n>dashboardTileOrders}"
+                        subheader="{i18n>dashboardTileOrdersSub}"
+                        press=".onTilePress"
+                        class="sapUiTinyMarginBegin sapUiTinyMarginTop"
+                        state="{dashboard>/tiles/orders/state}"
+                        frameType="OneByOne">
+                        <TileContent>
+                            <NumericContent
+                                value="{dashboard>/tiles/orders/value}"
+                                indicator="{dashboard>/tiles/orders/indicator}"
+                                valueColor="{dashboard>/tiles/orders/valueColor}"
+                                scale=""
+                                withMargin="false" />
+                        </TileContent>
+                    </GenericTile>
+
+                    <GenericTile
+                        header="{i18n>dashboardTileMaterials}"
+                        subheader="{i18n>dashboardTileMaterialsSub}"
+                        press=".onTilePress"
+                        class="sapUiTinyMarginBegin sapUiTinyMarginTop"
+                        frameType="OneByOne">
+                        <TileContent>
+                            <NumericContent
+                                value="{dashboard>/tiles/materials/value}"
+                                indicator="{dashboard>/tiles/materials/indicator}"
+                                valueColor="{dashboard>/tiles/materials/valueColor}"
+                                scale=""
+                                withMargin="false" />
+                        </TileContent>
+                    </GenericTile>
+
+                    <GenericTile
+                        header="{i18n>dashboardTileInvoices}"
+                        subheader="{i18n>dashboardTileInvoicesSub}"
+                        press=".onTilePress"
+                        class="sapUiTinyMarginBegin sapUiTinyMarginTop"
+                        frameType="OneByOne">
+                        <TileContent>
+                            <NumericContent
+                                value="{dashboard>/tiles/invoices/value}"
+                                indicator="{dashboard>/tiles/invoices/indicator}"
+                                valueColor="{dashboard>/tiles/invoices/valueColor}"
+                                scale=""
+                                withMargin="false" />
+                        </TileContent>
+                    </GenericTile>
+
+                    <GenericTile
+                        header="{i18n>dashboardTileAlerts}"
+                        subheader="{i18n>dashboardTileAlertsSub}"
+                        press=".onTilePress"
+                        class="sapUiTinyMarginBegin sapUiTinyMarginTop"
+                        state="{dashboard>/tiles/alerts/state}"
+                        frameType="OneByOne">
+                        <TileContent>
+                            <NumericContent
+                                value="{dashboard>/tiles/alerts/value}"
+                                valueColor="Critical"
+                                scale=""
+                                withMargin="false" />
+                        </TileContent>
+                    </GenericTile>
+                </HBox>
+            </Panel>
+
+            <!-- Recent Orders Table -->
+            <Panel headerText="{i18n>dashboardRecentOrders}" class="sapUiSmallMargin">
+                <Table
+                    id="recentOrdersTable"
+                    items="{dashboard>/recentOrders}"
+                    growing="true"
+                    growingThreshold="10"
+                    alternateRowColors="true"
+                    sticky="ColumnHeaders">
+                    <headerToolbar>
+                        <OverflowToolbar>
+                            <Title text="{i18n>dashboardOrdersTitle}" level="H5" />
+                            <ToolbarSpacer />
+                            <SearchField placeholder="{i18n>dashboardSearchPlaceholder}" width="300px" liveChange=".onOrderSearch" />
+                            <Button icon="sap-icon://refresh" press=".onRefreshOrders" tooltip="{i18n>dashboardRefreshTooltip}" />
+                            <Button icon="sap-icon://add" press=".onCreateOrder" text="{i18n>dashboardNewOrder}" type="Emphasized" />
+                        </OverflowToolbar>
+                    </headerToolbar>
+                    <columns>
+                        <Column width="12em"><Text text="{i18n>dashboardColDocNumber}" /></Column>
+                        <Column minScreenWidth="Tablet"><Text text="{i18n>dashboardColVendor}" /></Column>
+                        <Column hAlign="End" width="10em"><Text text="{i18n>dashboardColAmount}" /></Column>
+                        <Column width="10em"><Text text="{i18n>dashboardColStatus}" /></Column>
+                        <Column width="10em" minScreenWidth="Tablet"><Text text="{i18n>dashboardColDate}" /></Column>
+                    </columns>
+                    <items>
+                        <ColumnListItem type="Navigation" press=".onOrderPress">
+                            <cells>
+                                <ObjectIdentifier title="{dashboard>id}" />
+                                <Text text="{dashboard>vendor}" />
+                                <ObjectNumber
+                                    number="{dashboard>amount}"
+                                    unit="{dashboard>currency}" />
+                                <ObjectStatus
+                                    text="{dashboard>statusText}"
+                                    state="{dashboard>statusState}"
+                                    icon="{dashboard>statusIcon}" />
+                                <Text text="{dashboard>date}" />
+                            </cells>
+                        </ColumnListItem>
+                    </items>
+                </Table>
+            </Panel>
+
+            <!-- Quick Actions -->
+            <Panel headerText="{i18n>dashboardQuickActions}" class="sapUiSmallMargin">
+                <HBox wrap="Wrap" class="sapUiSmallMargin">
+                    <Button text="{i18n>dashboardCreateOrder}" icon="sap-icon://add-document" type="Emphasized" press=".onCreateOrder" class="sapUiTinyMarginEnd sapUiTinyMarginBottom" />
+                    <Button text="{i18n>dashboardGoodsReceipt}" icon="sap-icon://inventory" press=".onGoodsReceipt" class="sapUiTinyMarginEnd sapUiTinyMarginBottom" />
+                    <Button text="{i18n>dashboardInvoiceVerify}" icon="sap-icon://monitor-payments" press=".onInvoiceVerify" class="sapUiTinyMarginEnd sapUiTinyMarginBottom" />
+                    <Button text="{i18n>dashboardStockReport}" icon="sap-icon://bar-chart" press=".onStockReport" class="sapUiTinyMarginEnd sapUiTinyMarginBottom" />
+                </HBox>
+            </Panel>
+        </content>
+    </Page>
+</mvc:View>

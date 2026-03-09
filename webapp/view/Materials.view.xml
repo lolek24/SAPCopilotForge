@@ -1,0 +1,58 @@
+<mvc:View
+    controllerName="com.sap.app.controller.Materials"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m">
+
+    <Page id="materialsPage" showNavButton="true" navButtonPress=".onNavBack">
+        <customHeader>
+            <Bar>
+                <contentLeft>
+                    <Button icon="sap-icon://nav-back" press=".onNavBack" type="Transparent" />
+                    <Title text="{i18n>materialsPageTitle}" />
+                </contentLeft>
+                <contentRight>
+                    <Button text="{i18n>materialsNewMaterial}" icon="sap-icon://add" type="Emphasized" press=".onCreate" />
+                </contentRight>
+            </Bar>
+        </customHeader>
+        <content>
+            <Table
+                id="materialsTable"
+                items="{materials>/items}"
+                growing="true"
+                growingThreshold="20"
+                alternateRowColors="true"
+                sticky="ColumnHeaders,HeaderToolbar">
+                <headerToolbar>
+                    <OverflowToolbar>
+                        <SearchField placeholder="{i18n>materialsSearchPlaceholder}" width="300px" liveChange=".onSearch" />
+                        <ToolbarSpacer />
+                        <Button icon="sap-icon://refresh" press=".onRefresh" tooltip="{i18n>materialsRefreshTooltip}" />
+                    </OverflowToolbar>
+                </headerToolbar>
+                <columns>
+                    <Column width="10em"><Text text="{i18n>materialsColId}" /></Column>
+                    <Column><Text text="{i18n>materialsColDesc}" /></Column>
+                    <Column width="8em"><Text text="{i18n>materialsColType}" /></Column>
+                    <Column hAlign="End" width="8em"><Text text="{i18n>materialsColStock}" /></Column>
+                    <Column width="6em"><Text text="{i18n>materialsColUnit}" /></Column>
+                    <Column width="8em"><Text text="{i18n>materialsColPlant}" /></Column>
+                    <Column width="8em"><Text text="{i18n>materialsColStatus}" /></Column>
+                </columns>
+                <items>
+                    <ColumnListItem type="Navigation" press=".onMaterialPress">
+                        <cells>
+                            <ObjectIdentifier title="{materials>id}" />
+                            <Text text="{materials>name}" />
+                            <Text text="{materials>type}" />
+                            <ObjectNumber number="{materials>stock}" unit="{materials>unit}" state="{materials>stockState}" />
+                            <Text text="{materials>unit}" />
+                            <Text text="{materials>plant}" />
+                            <ObjectStatus text="{materials>statusText}" state="{materials>statusState}" />
+                        </cells>
+                    </ColumnListItem>
+                </items>
+            </Table>
+        </content>
+    </Page>
+</mvc:View>

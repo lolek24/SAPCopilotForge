@@ -1,0 +1,71 @@
+<mvc:View
+    controllerName="com.sap.app.controller.Orders"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m">
+
+    <Page id="ordersPage" showNavButton="true" navButtonPress=".onNavBack">
+        <customHeader>
+            <Bar>
+                <contentLeft>
+                    <Button icon="sap-icon://nav-back" press=".onNavBack" type="Transparent" />
+                    <Title text="{i18n>ordersPageTitle}" />
+                </contentLeft>
+                <contentRight>
+                    <Button text="{i18n>ordersNewOrder}" icon="sap-icon://add" type="Emphasized" press=".onCreateOrder" />
+                </contentRight>
+            </Bar>
+        </customHeader>
+        <content>
+            <!-- Filters -->
+            <IconTabBar id="ordersTabs" select=".onFilterSelect" class="sapUiNoMarginTop">
+                <items>
+                    <IconTabFilter text="{i18n>ordersFilterAll}" key="all" count="{orders>/counts/all}" />
+                    <IconTabSeparator />
+                    <IconTabFilter text="{i18n>ordersFilterApproved}" key="approved" count="{orders>/counts/approved}" iconColor="Positive" icon="sap-icon://accept" />
+                    <IconTabFilter text="{i18n>ordersFilterPending}" key="pending" count="{orders>/counts/pending}" iconColor="Critical" icon="sap-icon://pending" />
+                    <IconTabFilter text="{i18n>ordersFilterRejected}" key="rejected" count="{orders>/counts/rejected}" iconColor="Negative" icon="sap-icon://decline" />
+                </items>
+                <content>
+                    <Table
+                        id="ordersTable"
+                        items="{orders>/items}"
+                        growing="true"
+                        growingThreshold="20"
+                        alternateRowColors="true"
+                        sticky="ColumnHeaders,HeaderToolbar">
+                        <headerToolbar>
+                            <OverflowToolbar>
+                                <SearchField placeholder="{i18n>ordersSearchPlaceholder}" width="300px" liveChange=".onSearch" />
+                                <ToolbarSpacer />
+                                <Button icon="sap-icon://sort" press=".onSort" tooltip="{i18n>ordersSortTooltip}" />
+                                <Button icon="sap-icon://group-2" press=".onGroup" tooltip="{i18n>ordersGroupTooltip}" />
+                                <Button icon="sap-icon://action-settings" press=".onSettings" tooltip="{i18n>ordersSettingsTooltip}" />
+                                <Button icon="sap-icon://excel-attachment" press=".onExport" tooltip="{i18n>ordersExportTooltip}" />
+                            </OverflowToolbar>
+                        </headerToolbar>
+                        <columns>
+                            <Column width="12em"><Text text="{i18n>ordersColOrderNumber}" /></Column>
+                            <Column><Text text="{i18n>ordersColVendor}" /></Column>
+                            <Column hAlign="End" width="12em"><Text text="{i18n>ordersColNetAmount}" /></Column>
+                            <Column width="10em"><Text text="{i18n>ordersColStatus}" /></Column>
+                            <Column width="10em"><Text text="{i18n>ordersColDate}" /></Column>
+                            <Column width="10em"><Text text="{i18n>ordersColPlant}" /></Column>
+                        </columns>
+                        <items>
+                            <ColumnListItem type="Navigation" press=".onOrderPress">
+                                <cells>
+                                    <ObjectIdentifier title="{orders>id}" text="{orders>type}" />
+                                    <ObjectIdentifier title="{orders>vendor}" text="{orders>vendorCity}" />
+                                    <ObjectNumber number="{orders>amount}" unit="{orders>currency}" />
+                                    <ObjectStatus text="{orders>statusText}" state="{orders>statusState}" />
+                                    <Text text="{orders>date}" />
+                                    <Text text="{orders>plant}" />
+                                </cells>
+                            </ColumnListItem>
+                        </items>
+                    </Table>
+                </content>
+            </IconTabBar>
+        </content>
+    </Page>
+</mvc:View>

@@ -1,0 +1,76 @@
+<mvc:View
+    controllerName="com.sap.app.controller.Finance"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    >
+
+    <Page id="financePage" showNavButton="true" navButtonPress=".onNavBack">
+        <customHeader>
+            <Bar>
+                <contentLeft>
+                    <Button icon="sap-icon://nav-back" press=".onNavBack" type="Transparent" />
+                    <Title text="{i18n>financePageTitle}" />
+                </contentLeft>
+            </Bar>
+        </customHeader>
+        <content>
+            <!-- Financial KPIs -->
+            <Panel headerText="{i18n>financeOverview}" class="sapUiSmallMargin">
+                <HBox wrap="Wrap" class="sapUiSmallMargin" justifyContent="SpaceBetween">
+                    <VBox class="sapUiSmallMarginEnd" width="200px">
+                        <ObjectStatus text="{i18n>financeAssets}" />
+                        <ObjectNumber number="{finance>/kpi/assets}" unit="EUR" state="Success" />
+                    </VBox>
+                    <VBox class="sapUiSmallMarginEnd" width="200px">
+                        <ObjectStatus text="{i18n>financeLiabilities}" />
+                        <ObjectNumber number="{finance>/kpi/liabilities}" unit="EUR" state="Warning" />
+                    </VBox>
+                    <VBox class="sapUiSmallMarginEnd" width="200px">
+                        <ObjectStatus text="{i18n>financeEquity}" />
+                        <ObjectNumber number="{finance>/kpi/equity}" unit="EUR" state="Success" />
+                    </VBox>
+                    <VBox width="200px">
+                        <ObjectStatus text="{i18n>financeNetResult}" />
+                        <ObjectNumber number="{finance>/kpi/netResult}" unit="EUR" state="Success" />
+                    </VBox>
+                </HBox>
+            </Panel>
+
+            <!-- Invoices Table -->
+            <Panel headerText="{i18n>financeInvoices}" class="sapUiSmallMargin">
+                <Table
+                    id="invoicesTable"
+                    items="{finance>/invoices}"
+                    growing="true"
+                    alternateRowColors="true"
+                    sticky="ColumnHeaders">
+                    <headerToolbar>
+                        <OverflowToolbar>
+                            <SearchField placeholder="{i18n>financeSearchPlaceholder}" width="300px" liveChange=".onSearch" />
+                            <ToolbarSpacer />
+                            <Button icon="sap-icon://refresh" press=".onRefresh" tooltip="{i18n>financeRefreshTooltip}" />
+                        </OverflowToolbar>
+                    </headerToolbar>
+                    <columns>
+                        <Column width="12em"><Text text="{i18n>financeColInvoiceNumber}" /></Column>
+                        <Column><Text text="{i18n>financeColVendor}" /></Column>
+                        <Column hAlign="End" width="12em"><Text text="{i18n>financeColAmount}" /></Column>
+                        <Column width="10em"><Text text="{i18n>financeColDueDate}" /></Column>
+                        <Column width="10em"><Text text="{i18n>financeColStatus}" /></Column>
+                    </columns>
+                    <items>
+                        <ColumnListItem type="Navigation" press=".onInvoicePress">
+                            <cells>
+                                <ObjectIdentifier title="{finance>id}" />
+                                <Text text="{finance>vendor}" />
+                                <ObjectNumber number="{finance>amount}" unit="{finance>currency}" />
+                                <Text text="{finance>dueDate}" />
+                                <ObjectStatus text="{finance>statusText}" state="{finance>statusState}" />
+                            </cells>
+                        </ColumnListItem>
+                    </items>
+                </Table>
+            </Panel>
+        </content>
+    </Page>
+</mvc:View>
