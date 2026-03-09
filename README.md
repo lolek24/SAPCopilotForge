@@ -139,24 +139,92 @@ The application is available at: **http://localhost:3000**
 
 ## Architecture
 
+```mermaid
+graph TB
+    subgraph Browser["Browser"]
+        UI["SAPUI5 Fiori App<br/><i>sap_horizon theme</i>"]
+        subgraph Views["Views"]
+            V1["Dashboard"]
+            V2["Orders"]
+            V3["Materials"]
+            V4["Finance"]
+        end
+        Chat["SAP AI Copilot<br/><i>Chat Panel</i>"]
+        UI --- Views
+        UI --- Chat
+    end
+
+    subgraph NodeServer["Node.js Express :3000"]
+        Static["Static Files<br/><i>webapp/</i>"]
+        API_Chat["POST /api/chat"]
+        API_Query["POST /api/agent/query"]
+        API_Create["POST /api/agent/create"]
+        API_Health["GET /api/health"]
+        Mock["Mock Data<br/><i>fallback offline</i>"]
+    end
+
+    subgraph PythonAgent["Python Agent :8000"]
+        FastAPI["FastAPI Server"]
+        subgraph LangGraph["LangGraph StateGraph"]
+            Classify["Classify Intent<br/><i>MM · SD · FI</i>"]
+            Fetch["Fetch SAP Data<br/><i>mock layer</i>"]
+            Generate["Generate Response"]
+            Create["Create Document"]
+            Classify --> Fetch
+            Fetch -->|query/analyze| Generate
+            Fetch -->|create| Create
+        end
+        FastAPI --- LangGraph
+    end
+
+    subgraph LLM["LLM Provider"]
+        Anthropic["Anthropic<br/><i>Claude</i>"]
+        OpenAI["OpenAI<br/><i>GPT-4o</i>"]
+        Google["Google<br/><i>Gemini</i>"]
+        Ollama["Ollama<br/><i>local</i>"]
+    end
+
+    Browser -->|"HTTP"| NodeServer
+    NodeServer -->|"static files"| Browser
+    API_Chat -->|"proxy"| FastAPI
+    API_Query -->|"proxy"| FastAPI
+    API_Create -->|"proxy"| FastAPI
+    Generate -->|"API call"| LLM
+    Create -->|"API call"| LLM
+
+    style Browser fill:#e8f4fd,stroke:#1a73e8,color:#000
+    style NodeServer fill:#e6f4ea,stroke:#34a853,color:#000
+    style PythonAgent fill:#fef7e0,stroke:#f9ab00,color:#000
+    style LLM fill:#fce8e6,stroke:#ea4335,color:#000
+    style LangGraph fill:#fff8e1,stroke:#f9ab00,color:#000
+    style Views fill:#e8f0fe,stroke:#4285f4,color:#000
 ```
-Node.js Express (port 3000)
-├── Serves SAPUI5 static files from webapp/
-├── POST /api/agent/query  — proxy to AI agent
-├── POST /api/agent/create — proxy to AI agent
-├── POST /api/chat         — proxy to AI agent /chat
-└── GET  /api/health       — server status
 
-SAPUI5 Fiori (webapp/)
-├── Dashboard  — KPIs + orders table + quick actions
-├── Orders     — purchase orders list with filters
-├── Materials  — materials inventory
-├── Finance    — invoices and financial KPIs
-└── SAP AI Copilot — AI agent chat panel
+### Request Flow
 
-Python Agent (agent/, port 8000)
-├── server.py — FastAPI: /query, /create, /chat, /health
-└── agent.py  — LangGraph: classification → SAP data → LLM response
+```mermaid
+sequenceDiagram
+    actor User
+    participant UI as SAPUI5 Chat
+    participant Node as Express :3000
+    participant Agent as FastAPI :8000
+    participant Graph as LangGraph
+    participant LLM as LLM Provider
+
+    User->>UI: types message
+    UI->>Node: POST /api/chat
+    Node->>Agent: proxy POST /chat
+    Agent->>Graph: run_query()
+    Graph->>Graph: classify_intent()
+    Graph->>Graph: fetch_sap_data()
+    Graph->>LLM: generate_response()
+    LLM-->>Graph: AI response
+    Graph-->>Agent: result
+    Agent-->>Node: JSON response
+    Node-->>UI: JSON response
+    UI-->>User: display message
+
+    Note over Node,Agent: If agent offline,<br/>Node returns mock data
 ```
 
 ## Troubleshooting
