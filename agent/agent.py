@@ -1,12 +1,13 @@
 """
 LangGraph SAP Agent - Graph Definition
 Implements a multi-step agent for SAP ERP operations using LangGraph.
+Supports multiple LLM providers: Anthropic, OpenAI, Google, Ollama.
 """
 
+import os
 from typing import Annotated, TypedDict, Literal
 from langgraph.graph import StateGraph, END
 from langgraph.graph.message import add_messages
-from langchain_anthropic import ChatAnthropic
 from langchain_core.messages import SystemMessage, HumanMessage
 
 
@@ -22,11 +23,72 @@ class SAPAgentState(TypedDict):
 # --- LLM Setup (lazy init to avoid requiring API key at import time) ---
 _llm = None
 
+LLM_PROVIDERS = {
+    "anthropic": {
+        "module": "langchain_anthropic",
+        "class": "ChatAnthropic",
+        "default_model": "claude-sonnet-4-20250514",
+        "env_key": "ANTHROPIC_API_KEY",
+    },
+    "openai": {
+        "module": "langchain_openai",
+        "class": "ChatOpenAI",
+        "default_model": "gpt-4o",
+        "env_key": "OPENAI_API_KEY",
+    },
+    "google": {
+        "module": "langchain_google_genai",
+        "class": "ChatGoogleGenerativeAI",
+        "default_model": "gemini-2.0-flash",
+        "env_key": "GOOGLE_API_KEY",
+    },
+    "ollama": {
+        "module": "langchain_ollama",
+        "class": "ChatOllama",
+        "default_model": "llama3.1",
+        "env_key": None,
+    },
+}
+
+
+def _detect_provider() -> str:
+    """Detect LLM provider from env or auto-detect by available API key."""
+    explicit = os.getenv("LLM_PROVIDER", "").lower().strip()
+    if explicit and explicit in LLM_PROVIDERS:
+        return explicit
+
+    # Auto-detect by checking which API key is set
+    for name, cfg in LLM_PROVIDERS.items():
+        if cfg["env_key"] and os.getenv(cfg["env_key"]):
+            return name
+
+    return "anthropic"
+
+
 def get_llm():
+    """Initialize LLM based on LLM_PROVIDER env variable."""
     global _llm
-    if _llm is None:
-        _llm = ChatAnthropic(model="claude-sonnet-4-20250514", temperature=0)
+    if _llm is not None:
+        return _llm
+
+    import importlib
+
+    provider_name = _detect_provider()
+    provider = LLM_PROVIDERS[provider_name]
+    model_name = os.getenv("LLM_MODEL", provider["default_model"])
+
+    mod = importlib.import_module(provider["module"])
+    cls = getattr(mod, provider["class"])
+
+    if provider_name == "ollama":
+        base_url = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+        _llm = cls(model=model_name, base_url=base_url, temperature=0)
+    else:
+        _llm = cls(model=model_name, temperature=0)
+
+    print(f"[LLM] Provider: {provider_name} | Model: {model_name}", flush=True)
     return _llm
+
 
 SAP_SYSTEM_PROMPT = """Jesteś ekspertem SAP ERP. Twoim zadaniem jest:
 1. Analizowanie zapytań użytkownika dotyczących systemu SAP

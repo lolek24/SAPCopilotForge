@@ -50,7 +50,8 @@ sap.ui.define([
             aMessages.push({
                 role: this._getText("chatRoleUser"),
                 content: sMessage,
-                time: this._getTime()
+                time: this._getTime(),
+                isUser: true
             });
             oChatModel.setProperty("/messages", aMessages);
             oInput.setValue("");
@@ -131,6 +132,14 @@ sap.ui.define([
             });
             oChatModel.setProperty("/messages", aMessages);
             this._scrollChatToBottom();
+        },
+
+        onResendMessage: function (oEvent) {
+            var oContext = oEvent.getSource().getBindingContext("chat");
+            var sContent = oContext.getProperty("content");
+            var oInput = this.byId("chatInput");
+            oInput.setValue(sContent);
+            oInput.focus();
         },
 
         onClearChat: function () {

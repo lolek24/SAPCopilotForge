@@ -82,9 +82,17 @@
                                 growingScrollToLoad="true">
                                 <CustomListItem type="Inactive">
                                     <VBox class="sapUiSmallMargin">
-                                        <HBox justifyContent="SpaceBetween">
+                                        <HBox justifyContent="SpaceBetween" alignItems="Center">
                                             <Label text="{chat>role}" design="Bold" />
-                                            <Label text="{chat>time}" design="Light" />
+                                            <HBox alignItems="Center">
+                                                <Button
+                                                    icon="sap-icon://edit"
+                                                    type="Transparent"
+                                                    press=".onResendMessage"
+                                                    tooltip="{i18n>chatResend}"
+                                                    visible="{= ${chat>isUser} === true}" />
+                                                <Label text="{chat>time}" design="Light" />
+                                            </HBox>
                                         </HBox>
                                         <FormattedText htmlText="{chat>content}" class="sapUiTinyMarginTop" />
                                     </VBox>

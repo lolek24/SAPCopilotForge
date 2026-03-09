@@ -23,7 +23,7 @@ sys.modules["langgraph.graph.graph"] = _compat
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from agent import sap_graph, run_query, run_create
+from agent import sap_graph, run_query, run_create, _detect_provider, LLM_PROVIDERS
 
 app = FastAPI(title="SAP LangGraph Agent")
 
@@ -81,4 +81,6 @@ async def chat(request: ChatRequest):
 
 @app.get("/health")
 async def health():
-    return {"status": "ok", "agent": "sap_langgraph"}
+    provider = _detect_provider()
+    model = os.getenv("LLM_MODEL", LLM_PROVIDERS[provider]["default_model"])
+    return {"status": "ok", "agent": "sap_langgraph", "llm_provider": provider, "llm_model": model}
