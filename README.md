@@ -1,137 +1,136 @@
 # SAPCopilotForge
 
-Inteligentny asystent SAP ERP z wbudowanym agentem AI. Aplikacja łączy interfejs SAP Fiori z konwersacyjnym panelem AI (SAP AI Copilot), który umożliwia zadawanie pytań o dane SAP w języku naturalnym — zamówienia zakupu, materiały, finanse i faktury.
+An intelligent SAP ERP assistant with a built-in AI agent. The application combines a SAP Fiori interface with a conversational AI panel (SAP AI Copilot) that allows users to query SAP data using natural language — purchase orders, materials, finances and invoices.
 
-Agent AI analizuje zapytania użytkownika, klasyfikuje moduł SAP (MM, SD, FI), pobiera odpowiednie dane i generuje czytelne odpowiedzi po polsku.
+The AI agent analyzes user queries, classifies the relevant SAP module (MM, SD, FI), fetches the appropriate data and generates clear responses in Polish.
 
-## Zrzuty ekranu
+## Screenshots
 
-### Dashboard z panelem AI Copilot
+### Dashboard with AI Copilot panel
 ![Dashboard](screenshot/Zrzut%20ekranu%202026-03-09%20121230.png)
 
-### Konwersacja z agentem AI
+### AI agent conversation
 ![Chat AI](screenshot/Zrzut%20ekranu%202026-03-09%20122515.png)
 
-## Stos technologiczny
+## Tech Stack
 
-| Warstwa | Technologia |
+| Layer | Technology |
 |---|---|
 | **Frontend** | SAPUI5 / OpenUI5 (sap_horizon theme, Fiori design) |
 | **Backend** | Node.js + Express 5 |
-| **Agent AI** | Python + LangGraph + LangChain |
-| **Model LLM** | Claude (Anthropic) via langchain-anthropic |
-| **API agenta** | FastAPI + Uvicorn |
-| **Proxy** | http-proxy-middleware |
+| **AI Agent** | Python + LangGraph + LangChain |
+| **LLM Model** | Claude (Anthropic) via langchain-anthropic |
+| **Agent API** | FastAPI + Uvicorn |
 
 ### Frontend — SAPUI5 Fiori
-- Natywny interfejs SAP Fiori oparty o bibliotekę **OpenUI5** (CDN)
-- Motyw **sap_horizon** — najnowszy design system SAP
-- Widoki: Dashboard, Zamówienia, Materiały, Finanse
-- Wbudowany panel **SAP AI Copilot** — czat z agentem AI bezpośrednio w interfejsie
-- Nawigacja głosowa po aplikacji z poziomu czatu (np. *"pokaż zamówienia"*)
-- Komponenty: `tnt:ToolPage`, `SplitApp`, `GenericTile`, `IconTabBar`, `Table`
+- Native SAP Fiori interface built on **OpenUI5** (CDN)
+- **sap_horizon** theme — SAP's latest design system
+- Views: Dashboard, Orders, Materials, Finance
+- Built-in **SAP AI Copilot** panel — chat with the AI agent directly in the UI
+- Natural language navigation from the chat (e.g. *"show orders"*)
+- Components: `tnt:ToolPage`, `SplitApp`, `GenericTile`, `IconTabBar`, `Table`
 
 ### Backend — Node.js Express
-- Serwer **Express 5** serwujący pliki statyczne SAPUI5
-- Proxy API przekierowujące zapytania do agenta Python
-- Endpointy: `/api/chat`, `/api/agent/query`, `/api/agent/create`, `/api/health`
-- Automatyczny fallback na dane mockowe gdy agent jest offline
+- **Express 5** server serving static SAPUI5 files
+- API proxy forwarding requests to the Python agent
+- Endpoints: `/api/chat`, `/api/agent/query`, `/api/agent/create`, `/api/health`
+- Automatic fallback to mock data when the agent is offline
 
-### Agent AI — Python LangGraph
-- Graf stanowy **LangGraph** z etapami: klasyfikacja intencji → pobranie danych SAP → generowanie odpowiedzi
-- Model **Claude** (Anthropic) jako silnik LLM
-- Serwer **FastAPI** z endpointami REST
-- Obsługa modułów SAP: **MM** (zakupy/materiały), **SD** (sprzedaż), **FI** (finanse)
-- Warstwa danych mockowych symulująca odpowiedzi systemu SAP
+### AI Agent — Python LangGraph
+- **LangGraph** state graph with stages: intent classification → SAP data retrieval → response generation
+- **Claude** (Anthropic) as the LLM engine
+- **FastAPI** server with REST endpoints
+- SAP module support: **MM** (purchasing/materials), **SD** (sales), **FI** (finance)
+- Mock data layer simulating SAP system responses
 
-## Wymagania
+## Requirements
 
 - **Node.js** >= 18
 - **Python** >= 3.10
-- **Klucz API Anthropic** — [console.anthropic.com](https://console.anthropic.com/)
+- **Anthropic API key** — [console.anthropic.com](https://console.anthropic.com/)
 
-## Instalacja
+## Installation
 
-### 1. Zależności Node.js
+### 1. Node.js dependencies
 
 ```bash
 npm install
 ```
 
-### 2. Zależności Pythona (agent AI)
+### 2. Python dependencies (AI agent)
 
 ```bash
 npm run agent:install
 ```
 
-### 3. Konfiguracja klucza API
+### 3. API key configuration
 
-Edytuj plik `.env.local` w katalogu głównym projektu:
+Edit the `.env.local` file in the project root:
 
 ```
-ANTHROPIC_API_KEY=sk-ant-TWOJ_KLUCZ
+ANTHROPIC_API_KEY=sk-ant-YOUR_KEY
 LANGGRAPH_AGENT_URL=http://localhost:8000
 ```
 
-## Uruchamianie
+## Running
 
-Potrzebne są **dwa terminale** uruchomione równolegle:
+You need **two terminals** running simultaneously:
 
-### Terminal 1 — Serwer Node.js (port 3000)
+### Terminal 1 — Node.js server (port 3000)
 
 ```bash
 npm run dev
 ```
 
-### Terminal 2 — Agent AI Python (port 8000)
+### Terminal 2 — Python AI agent (port 8000)
 
 ```bash
 npm run agent:start
 ```
 
-Aplikacja dostępna pod adresem: **http://localhost:3000**
+The application is available at: **http://localhost:3000**
 
-## Komendy
+## Commands
 
-| Komenda | Opis |
+| Command | Description |
 |---|---|
-| `npm run dev` | Serwer Node.js z auto-reload |
-| `npm run start` | Serwer Node.js (produkcja) |
-| `npm run agent:start` | Agent AI Python (LangGraph) |
-| `npm run agent:install` | Instalacja zależności Pythona |
+| `npm run dev` | Node.js server with auto-reload |
+| `npm run start` | Node.js server (production) |
+| `npm run agent:start` | Python AI agent (LangGraph) |
+| `npm run agent:install` | Install Python dependencies |
 
-## Architektura
+## Architecture
 
 ```
 Node.js Express (port 3000)
-├── Serwuje pliki SAPUI5 z katalogu webapp/
-├── POST /api/agent/query  — proxy do agenta AI
-├── POST /api/agent/create — proxy do agenta AI
-├── POST /api/chat         — proxy do agenta AI /chat
-└── GET  /api/health       — status serwera
+├── Serves SAPUI5 static files from webapp/
+├── POST /api/agent/query  — proxy to AI agent
+├── POST /api/agent/create — proxy to AI agent
+├── POST /api/chat         — proxy to AI agent /chat
+└── GET  /api/health       — server status
 
 SAPUI5 Fiori (webapp/)
-├── Dashboard  — KPI + tabela zamówień + szybkie akcje
-├── Zamówienia — lista zamówień zakupu z filtrami
-├── Materiały  — magazyn materiałów
-├── Finanse    — faktury i wskaźniki finansowe
-└── SAP AI Copilot — panel czatu z agentem AI
+├── Dashboard  — KPIs + orders table + quick actions
+├── Orders     — purchase orders list with filters
+├── Materials  — materials inventory
+├── Finance    — invoices and financial KPIs
+└── SAP AI Copilot — AI agent chat panel
 
-Agent Python (agent/, port 8000)
+Python Agent (agent/, port 8000)
 ├── server.py — FastAPI: /query, /create, /chat, /health
-└── agent.py  — LangGraph: klasyfikacja → dane SAP → odpowiedź Claude
+└── agent.py  — LangGraph: classification → SAP data → Claude response
 ```
 
-## Rozwiązywanie problemów
+## Troubleshooting
 
-**"Nie mogę połączyć się z agentem AI"**
-- Upewnij się, że agent Python jest uruchomiony (`npm run agent:start`)
-- Sprawdź czy `ANTHROPIC_API_KEY` jest ustawiony w `.env.local`
+**"Cannot connect to AI agent"**
+- Make sure the Python agent is running (`npm run agent:start`)
+- Check that `ANTHROPIC_API_KEY` is set in `.env.local`
 
-**Agent nie startuje**
-- Zainstaluj zależności: `npm run agent:install`
-- Sprawdź wersję Pythona: `python --version` (wymagany >= 3.10)
+**Agent won't start**
+- Install dependencies: `npm run agent:install`
+- Check Python version: `python --version` (requires >= 3.10)
 
-**Aplikacja nie ładuje się w przeglądarce**
-- Sprawdź czy serwer Node.js działa (`npm run dev`)
-- Otwórz http://localhost:3000
+**Application doesn't load in browser**
+- Make sure the Node.js server is running (`npm run dev`)
+- Open http://localhost:3000
